@@ -1,6 +1,6 @@
 {
   "name": "ranpivot-table",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A reusable JavaScript pivot table module",
   "main": "pivotTable.js",
   "scripts": {
