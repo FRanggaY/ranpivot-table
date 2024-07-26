@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Pivot Table</title>
+  <style>
+    #pivot-table-container{
+      table,
+      th,
+      td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 8px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="pivot-table-container"></div>
+
+  <script src="../../dist/pivotTable.js"></script>
+  <script>
+    const data = [
+      {"Product": "Apple",  "World": "Earth-5", "Category": "Fruits", "Region": "North", "Month": "January", "Sales": 120},
+      {"Product": "Banana",  "World": "Earth-5", "Category": "Fruits", "Region": "North", "Month": "January", "Sales": 90},
+      {"Product": "Banana",  "World": "Earth-1", "Category": "Fruits", "Region": "South", "Month": "January", "Sales": 90},
+      {"Product": "Carrot",  "World": "Earth-5", "Category": "Vegetables", "Region": "North", "Month": "January", "Sales": 70},
+      {"Product": "Apple",  "World": "Earth-5", "Category": "Fruits", "Region": "South", "Month": "February", "Sales": 130},
+      {"Product": "Banana",  "World": "Earth-5", "Category": "Fruits", "Region": "South", "Month": "February", "Sales": 95},
+      {"Product": "Carrot",  "World": "Earth-5", "Category": "Vegetables", "Region": "South", "Month": "February", "Sales": 75},
+      {"Product": "Apple",  "World": "Earth-5", "Category": "Fruits", "Region": "North", "Month": "March", "Sales": 140},
+      {"Product": "Banana",  "World": "Earth-2", "Category": "Fruits", "Region": "North", "Month": "March", "Sales": 100},
+      {"Product": "Carrot",  "World": "Earth-5", "Category": "Vegetables", "Region": "North", "Month": "March", "Sales": 80}
+    ];
+
+    const table = document.getElementById("pivot-table-container");
+
+    const pivotTable = new RanPivotTable(data, ['Region', 'Category'], ['Product', 'Month', 'World'], 'Sales');
+    table.innerHTML = pivotTable.render();
+
+  </script>
+</body>
+
+</html>
