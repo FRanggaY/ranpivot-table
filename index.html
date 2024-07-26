@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Advanced Pivot Table</title>
   <style>
-    table, th, td {
+    table,
+    th,
+    td {
       border: 1px solid black;
       border-collapse: collapse;
       padding: 8px;
@@ -13,11 +16,27 @@
     }
   </style>
 </head>
+
 <body>
   <div id="pivot-table-container"></div>
 
-  <script src="./pivotTablePredefined.js"></script>
+  <!-- <script src="./pivotTablePredefined.js"></script> -->
+  <script src="./pivotTable.js"></script>
   <script>
+    // it from predefined pivot table
+    // const data = [
+    //   { Region: 'North', Country: 'USA', Product: 'Apple', Month: 'January', Sales: 150 },
+    //   { Region: 'North', Country: 'USA', Product: 'Apple', Month: 'February', Sales: 200 },
+    //   { Region: 'South', Country: 'Mexico', Product: 'Banana', Month: 'January', Sales: 300 },
+    //   { Region: 'South', Country: 'Mexico', Product: 'Apple', Month: 'January', Sales: 120 },
+    //   { Region: 'North', Country: 'Canada', Product: 'Apple', Month: 'January', Sales: 180 },
+    //   { Region: 'North', Country: 'Canada', Product: 'Apple', Month: 'January', Sales: 180 },
+    // ];
+
+
+    // const pivotTable = new PivotTable(data, ['Region', 'Country'], ['Product', 'Month'], 'Sales');
+    // document.body.innerHTML = pivotTable.render();
+
     const data = [
       {"Product": "Apple", "Category": "Fruits", "Region": "North", "Month": "January", "Sales": 120},
       {"Product": "Banana", "Category": "Fruits", "Region": "North", "Month": "January", "Sales": 90},
@@ -37,9 +56,11 @@
       valueField: 'Sales'
     };
 
-    const pivotTable = new PivotTable(data, config);
-    const tableHTML = pivotTable.renderTable();
-    document.body.innerHTML = tableHTML;
+    const pivotTable = new PivotTable(data, ['Region', 'Category'], ['Product', 'Month'], 'Sales');
+    document.body.innerHTML = pivotTable.render();
+
+
   </script>
 </body>
+
 </html>
