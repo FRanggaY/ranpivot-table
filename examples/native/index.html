@@ -39,7 +39,12 @@
 
     const table = document.getElementById("pivot-table-container");
 
-    const pivotTable = new RanPivotTable(data, ['Region', 'Category'], ['Product', 'Month', 'World'], 'Sales');
+    const rowFields = ['Region', 'Category'];
+    const columnFields = ['Product', 'Month', 'World'];
+    const valueField = 'Sales';
+    const aggregation = 'sum';
+
+    const pivotTable = new RanPivotTable(data, rowFields, columnFields, valueField, aggregation);
     table.innerHTML = pivotTable.render();
 
   </script>

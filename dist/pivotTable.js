@@ -1,12 +1,29 @@
 (function (global) {
+    /**
+     * A class representing a pivot table.
+     * @class
+     */
     class RanPivotTable {
-        constructor(data, rowFields, columnFields, valueField) {
+        /**
+         * Creates an instance of RanPivotTable.
+         * @param {Array<Object>} data - The data to be processed.
+         * @param {Array<string>} rowFields - The fields to be used for rows.
+         * @param {Array<string>} columnFields - The fields to be used for columns.
+         * @param {string} valueField - The field to be aggregated.
+         * @param {string} [aggregationFunction='sum'] - The aggregation function to be used ('sum', 'count', 'countUnique', 'average', 'median').
+         */
+        constructor(data, rowFields, columnFields, valueField, aggregationFunction = 'sum') {
             this.data = data;
             this.rowFields = rowFields;
             this.columnFields = columnFields;
             this.valueField = valueField;
+            this.aggregationFunction = aggregationFunction;
         }
 
+        /**
+         * Renders the pivot table.
+         * @returns {string} The HTML string of the rendered pivot table.
+         */
         render() {
             const { columnGroups, rowHeaders, dataMatrix } = this.processData();
             return this.buildHtml(columnGroups, rowHeaders, dataMatrix);
@@ -29,14 +46,43 @@
 
                 rowHeaders.add(rowKey);
                 dataMatrix[rowKey] = dataMatrix[rowKey] || {};
-                dataMatrix[rowKey][columnKey] = (dataMatrix[rowKey][columnKey] || 0) + item[this.valueField];
+                if (!dataMatrix[rowKey][columnKey]) {
+                    dataMatrix[rowKey][columnKey] = [];
+                }
+                dataMatrix[rowKey][columnKey].push(item[this.valueField]);
             });
+
+            // Apply aggregation function to data matrix
+            for (let rowKey in dataMatrix) {
+                for (let columnKey in dataMatrix[rowKey]) {
+                    dataMatrix[rowKey][columnKey] = this.aggregate(dataMatrix[rowKey][columnKey]);
+                }
+            }
 
             return {
                 columnGroups: Object.values(columnGroups).sort((a, b) => a.key.localeCompare(b.key)),
                 rowHeaders: Array.from(rowHeaders).sort(),
                 dataMatrix
             };
+        }
+
+        aggregate(values) {
+            switch (this.aggregationFunction) {
+                case 'sum':
+                    return values.reduce((a, b) => a + b, 0);
+                case 'count':
+                    return values.length;
+                case 'countUnique':
+                    return new Set(values).size;
+                case 'average':
+                    return values.reduce((a, b) => a + b, 0) / values.length;
+                case 'median':
+                    values.sort((a, b) => a - b);
+                    const mid = Math.floor(values.length / 2);
+                    return values.length % 2 !== 0 ? values[mid] : (values[mid - 1] + values[mid]) / 2;
+                default:
+                    return values.reduce((a, b) => a + b, 0);
+            }
         }
 
         buildHtml(columnGroups, rowHeaders, dataMatrix) {
