@@ -1,12 +1,12 @@
 {
   "name": "ranpivot-table",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A reusable JavaScript pivot table module",
   "main": "pivotTable.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "FRY",
   "license": "ISC"
 }

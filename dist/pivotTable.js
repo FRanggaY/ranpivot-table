@@ -24,45 +24,6 @@ class RanPivotTable {
         return this.buildHtml(columnGroups, rowHeaders, dataMatrix);
     }
 
-    // renderReactComponent() {
-    //     const { columnGroups, rowHeaders, dataMatrix } = this.processData();
-
-    //     const Table = () => (
-    //         <table border="1">
-    //             <thead>
-    //                 {this.columnFields.map((colField, colIndex) => (
-    //                     <tr key={`header-${colIndex}`}>
-    //                         {colIndex === 0 && this.rowFields.map((rowField, rowIndex) => (
-    //                             <th key={`row-header-${rowIndex}`}>{rowField}</th>
-    //                         ))}
-    //                         {columnGroups.map((group, groupIndex) => (
-    //                             <th key={`col-header-${groupIndex}`}>
-    //                                 {group.key.split(' | ')[colIndex] || ''}
-    //                             </th>
-    //                         ))}
-    //                     </tr>
-    //                 ))}
-    //             </thead>
-    //             <tbody>
-    //                 {rowHeaders.map((rowKey, rowIndex) => (
-    //                     <tr key={`row-${rowIndex}`}>
-    //                         {rowKey.split(' | ').map((key, keyIndex) => (
-    //                             <td key={`row-key-${keyIndex}`}>{key}</td>
-    //                         ))}
-    //                         {columnGroups.map((group, groupIndex) => (
-    //                             <td key={`data-${groupIndex}`}>
-    //                                 {dataMatrix[rowKey][group.key] || 0}
-    //                             </td>
-    //                         ))}
-    //                     </tr>
-    //                 ))}
-    //             </tbody>
-    //         </table>
-    //     );
-
-    //     return Table;
-    // }
-
     processData() {
         let columnGroups = {};
         let rowHeaders = new Set();
