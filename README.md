@@ -15,13 +15,13 @@
 Import module using CDN
 
 ```
-<script src="https://cdn.jsdelivr.net/npm/ranpivot-table@1.0.5/dist/pivotTable.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ranpivot-table@1.0.6/dist/pivotTable.js"></script>
 ```
 
 ```html
     <div id="pivot-table-container"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/ranpivot-table@1.0.5/dist/pivotTable.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ranpivot-table@1.0.6/dist/pivotTable.js"></script>
     <script>
         const data = [
         {"Product": "Apple",  "World": "Earth-5", "Category": "Fruits", "Region": "North", "Month": "January", "Sales": 120},
