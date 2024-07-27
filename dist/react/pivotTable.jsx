@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 
 const RanPivotTable = ({ data, rowFields, columnFields, valueField, aggregationFunction = 'sum' }) => {
     const [columnGroups, setColumnGroups] = useState([]);
@@ -142,14 +141,6 @@ const RanPivotTable = ({ data, rowFields, columnFields, valueField, aggregationF
             </tbody>
         </table>
     );
-};
-
-RanPivotTable.propTypes = {
-    data: PropTypes.arrayOf(PropTypes.object).isRequired,
-    rowFields: PropTypes.arrayOf(PropTypes.string).isRequired,
-    columnFields: PropTypes.arrayOf(PropTypes.string).isRequired,
-    valueField: PropTypes.string.isRequired,
-    aggregationFunction: PropTypes.oneOf(['sum', 'count', 'countUnique', 'average', 'median']),
 };
 
 export default RanPivotTable;
