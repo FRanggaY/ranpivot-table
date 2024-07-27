@@ -2,6 +2,12 @@
     Simple reusable JavaScript pivot table for developers
 </p>
 
+<div align="center">
+  <a href="https://github.com/FRanggaY/ranpivot-table">
+    <img src="examples/PivotTable.png" width="400px" alt="Thumbnail">
+  </a>
+</div>
+
 ## Guide Usage
 
 ### Native HTML
