@@ -6,13 +6,24 @@ class RanPivotTable {
      * @param {Array<string>} columnFields - The fields to be used for columns.
      * @param {string} valueField - The field to be aggregated.
      * @param {string} [aggregationFunction='sum'] - The aggregation function to be used ('sum', 'count', 'countUnique', 'average', 'median').
+     * @param {Object} [heatmapOptions] - Optional heatmap settings.
+     * @param {boolean} [heatmapOptions.enableHeatmap=false] - Enable overall heatmap.
+     * @param {boolean} [heatmapOptions.enableRowHeatmap=false] - Enable row-based heatmap.
+     * @param {boolean} [heatmapOptions.enableColHeatmap=false] - Enable column-based heatmap.
      */
-    constructor(data, rowFields, columnFields, valueField, aggregationFunction = 'sum') {
+    constructor(data, rowFields, columnFields, valueField, aggregationFunction = 'sum', heatmapOptions = {}) {
         this.data = data;
         this.rowFields = rowFields;
         this.columnFields = columnFields;
         this.valueField = valueField;
         this.aggregationFunction = aggregationFunction;
+
+        // Heatmap settings
+        this.heatmapOptions = {
+            enableHeatmap: heatmapOptions.enableHeatmap || false,
+            enableRowHeatmap: heatmapOptions.enableRowHeatmap || false,
+            enableColHeatmap: heatmapOptions.enableColHeatmap || false
+        };
     }
 
     /**
@@ -116,6 +127,9 @@ class RanPivotTable {
             html += `<th>${field}</th>`;
         });
 
+        // Calculate min and max values for heatmap
+        const { min, max } = this.getMinMaxValues(dataMatrix);
+
         // Fill in the data rows
         rowHeaders.forEach((rowKey, rowIndex) => {
             html += '<tr>';
@@ -130,7 +144,8 @@ class RanPivotTable {
             });
             columnGroups.forEach(group => {
                 const value = dataMatrix[rowKey][group.key] || 0;
-                html += `<td>${value}</td>`;
+                const color = this.getHeatmapColor(value, min, max, rowKey, group.key, dataMatrix);
+                html += `<td style="background-color: ${color};">${value}</td>`;
             });
             html += '</tr>';
         });
@@ -138,6 +153,54 @@ class RanPivotTable {
         html += '</tbody></table>';
         return html;
     }
+
+    getMinMaxValues(dataMatrix) {
+        let min = Infinity, max = -Infinity;
+
+        for (let rowKey in dataMatrix) {
+            for (let columnKey in dataMatrix[rowKey]) {
+                const value = dataMatrix[rowKey][columnKey];
+                if (value < min) min = value;
+                if (value > max) max = value;
+            }
+        }
+
+        return { min, max };
+    }
+
+    getHeatmapColor(value, min, max, rowKey, columnKey, dataMatrix) {
+        const intensity = (value - min) / (max - min);
+        const heatmapBaseColor = [255, 0, 0]; // Red color
+        const whiteColor = [255, 255, 255];
+
+        const interpolateColor = (startColor, endColor, factor) => {
+            return startColor.map((color, i) => Math.min(255, Math.max(0, Math.round(color + factor * (endColor[i] - color)))));
+        };
+
+        const calculateColor = (factor) => {
+            return interpolateColor(whiteColor, heatmapBaseColor, factor);
+        };
+
+        let color;
+
+        if (this.heatmapOptions.enableHeatmap) {
+            color = `rgb(${calculateColor(intensity).join(',')})`;
+        } else if (this.heatmapOptions.enableRowHeatmap) {
+            const rowMax = Math.max(...Object.values(dataMatrix[rowKey]));
+            const rowIntensity = value / rowMax;
+            color = `rgb(${calculateColor(rowIntensity).join(',')})`;
+        } else if (this.heatmapOptions.enableColHeatmap) {
+            const colValues = Object.values(dataMatrix).map(row => row[columnKey] || 0);
+            const colMax = Math.max(...colValues);
+            const colIntensity = value / colMax;
+            color = `rgb(${calculateColor(colIntensity).join(',')})`;
+        } else {
+            color = `rgb(${calculateColor(intensity).join(',')})`;
+        }
+
+        return color;
+    }
+
 }
 
 // For modern JavaScript frameworks and tools that support ES modules

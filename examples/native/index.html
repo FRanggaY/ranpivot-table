@@ -22,7 +22,8 @@
 <body>
   <div id="pivot-table-container"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/ranpivot-table@1.0.6/dist/pivotTable.js"></script>
+  <script src="../../dist/pivotTable.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/ranpivot-table@1.0.6/dist/pivotTable.js"></script> -->
   <script>
     const data = [
       {"Product": "Apple",  "World": "Earth-5", "Category": "Fruits", "Region": "North", "Month": "January", "Sales": 120},
@@ -43,8 +44,13 @@
     const columnFields = ['Product', 'Month', 'World'];
     const valueField = 'Sales';
     const aggregation = 'sum';
+    const heatMapOptions = {
+      enableHeatmap: true,
+      enableRowHeatmap: true,
+      enableColHeatmap: false
+    }
 
-    const pivotTable = new RanPivotTable(data, rowFields, columnFields, valueField, aggregation);
+    const pivotTable = new RanPivotTable(data, rowFields, columnFields, valueField, aggregation, heatMapOptions);
     table.innerHTML = pivotTable.render();
 
   </script>

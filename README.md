@@ -24,16 +24,16 @@ Import module using CDN
     <script src="https://cdn.jsdelivr.net/npm/ranpivot-table@1.0.6/dist/pivotTable.js"></script>
     <script>
         const data = [
-        {"Product": "Apple",  "World": "Earth-5", "Category": "Fruits", "Region": "North", "Month": "January", "Sales": 120},
-        {"Product": "Banana",  "World": "Earth-5", "Category": "Fruits", "Region": "North", "Month": "January", "Sales": 90},
-        {"Product": "Banana",  "World": "Earth-1", "Category": "Fruits", "Region": "South", "Month": "January", "Sales": 90},
-        {"Product": "Carrot",  "World": "Earth-5", "Category": "Vegetables", "Region": "North", "Month": "January", "Sales": 70},
-        {"Product": "Apple",  "World": "Earth-5", "Category": "Fruits", "Region": "South", "Month": "February", "Sales": 130},
-        {"Product": "Banana",  "World": "Earth-5", "Category": "Fruits", "Region": "South", "Month": "February", "Sales": 95},
-        {"Product": "Carrot",  "World": "Earth-5", "Category": "Vegetables", "Region": "South", "Month": "February", "Sales": 75},
-        {"Product": "Apple",  "World": "Earth-5", "Category": "Fruits", "Region": "North", "Month": "March", "Sales": 140},
-        {"Product": "Banana",  "World": "Earth-2", "Category": "Fruits", "Region": "North", "Month": "March", "Sales": 100},
-        {"Product": "Carrot",  "World": "Earth-5", "Category": "Vegetables", "Region": "North", "Month": "March", "Sales": 80}
+          {"Product": "Apple",  "World": "Earth-5", "Category": "Fruits", "Region": "North", "Month": "January", "Sales": 120},
+          {"Product": "Banana",  "World": "Earth-5", "Category": "Fruits", "Region": "North", "Month": "January", "Sales": 90},
+          {"Product": "Banana",  "World": "Earth-1", "Category": "Fruits", "Region": "South", "Month": "January", "Sales": 90},
+          {"Product": "Carrot",  "World": "Earth-5", "Category": "Vegetables", "Region": "North", "Month": "January", "Sales": 70},
+          {"Product": "Apple",  "World": "Earth-5", "Category": "Fruits", "Region": "South", "Month": "February", "Sales": 130},
+          {"Product": "Banana",  "World": "Earth-5", "Category": "Fruits", "Region": "South", "Month": "February", "Sales": 95},
+          {"Product": "Carrot",  "World": "Earth-5", "Category": "Vegetables", "Region": "South", "Month": "February", "Sales": 75},
+          {"Product": "Apple",  "World": "Earth-5", "Category": "Fruits", "Region": "North", "Month": "March", "Sales": 140},
+          {"Product": "Banana",  "World": "Earth-2", "Category": "Fruits", "Region": "North", "Month": "March", "Sales": 100},
+          {"Product": "Carrot",  "World": "Earth-5", "Category": "Vegetables", "Region": "North", "Month": "March", "Sales": 80}
         ];
 
         const table = document.getElementById("pivot-table-container");
@@ -42,8 +42,13 @@ Import module using CDN
         const columnFields = ['Product', 'Month', 'World'];
         const valueField = 'Sales';
         const aggregation = 'sum';
+        const heatMapOptions = {
+          enableHeatmap: true,
+          enableRowHeatmap: false,
+          enableColHeatmap: false
+        }
 
-        const pivotTable = new RanPivotTable(data, rowFields, columnFields, valueField, aggregation);
+        const pivotTable = new RanPivotTable(data, rowFields, columnFields, valueField, aggregation, heatMapOptions);
         table.innerHTML = pivotTable.render();
 
     </script>
