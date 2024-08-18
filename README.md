@@ -91,6 +91,12 @@ function App() {
       columnFields={columnFields}
       valueField={valueField}
       aggregationFunction={aggregation}
+      heatmapOptions={{
+        enableHeatmap: true,
+        enableRowHeatmap: false,
+        enableColHeatmap: false,
+        showLegend: false,
+      }}
     />
   )
 }
