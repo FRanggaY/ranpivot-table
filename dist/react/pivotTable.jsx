@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from 'react';
 
-const RanPivotTable = ({ data, rowFields, columnFields, valueField, aggregationFunction = 'sum' }) => {
+const RanPivotTable = ({ 
+    data, 
+    rowFields, 
+    columnFields, 
+    valueField, 
+    aggregationFunction = 'sum', 
+    heatmapOptions = {} 
+}) => {
     const [columnGroups, setColumnGroups] = useState([]);
     const [rowHeaders, setRowHeaders] = useState([]);
     const [dataMatrix, setDataMatrix] = useState({});
@@ -66,6 +73,25 @@ const RanPivotTable = ({ data, rowFields, columnFields, valueField, aggregationF
         processData();
     }, [data, rowFields, columnFields, valueField, aggregationFunction]);
 
+    const getMinMaxValues = () => {
+        let min = Infinity, max = -Infinity;
+        for (let rowKey in dataMatrix) {
+            for (let columnKey in dataMatrix[rowKey]) {
+                const value = dataMatrix[rowKey][columnKey];
+                if (value < min) min = value;
+                if (value > max) max = value;
+            }
+        }
+        return { min, max };
+    };
+
+    const getHeatmapColor = (value, min, max) => {
+        const intensity = (value - min) / (max - min);
+        const red = 255;
+        const greenBlue = Math.round(255 * (1 - intensity));
+        return `rgb(${red}, ${greenBlue}, ${greenBlue})`; // Ranges from white to red
+    };
+
     const renderColumnHeaders = () => {
         const colLevels = columnFields.length;
         const headers = [];
@@ -123,23 +149,71 @@ const RanPivotTable = ({ data, rowFields, columnFields, valueField, aggregationF
         }).filter(cell => cell !== null);
     };
 
+    const renderDataCells = (rowKey, colIndex, group) => {
+        const value = dataMatrix[rowKey][group.key] || 0;
+        const { min, max } = getMinMaxValues();
+
+        let backgroundColor = 'inherit';
+        if (heatmapOptions.enableHeatmap) {
+            backgroundColor = getHeatmapColor(value, min, max);
+        } else if (heatmapOptions.enableRowHeatmap) {
+            const rowValues = Object.values(dataMatrix[rowKey]);
+            const rowMin = Math.min(...rowValues);
+            const rowMax = Math.max(...rowValues);
+            backgroundColor = getHeatmapColor(value, rowMin, rowMax);
+        } else if (heatmapOptions.enableColHeatmap) {
+            const colValues = rowHeaders.map(rKey => dataMatrix[rKey][group.key] || 0);
+            const colMin = Math.min(...colValues);
+            const colMax = Math.max(...colValues);
+            backgroundColor = getHeatmapColor(value, colMin, colMax);
+        }
+
+        return <td key={`data-${rowKey}-${colIndex}`} style={{ backgroundColor }}>{value}</td>;
+    };
+
+    const renderLegend = () => {
+        const { min, max } = getMinMaxValues();
+        const steps = 10;
+        const stepValue = (max - min) / steps;
+        const legendItems = [];
+
+        for (let i = 0; i <= steps; i++) {
+            const startValue = min + stepValue * i;
+            const color = getHeatmapColor(startValue, min, max);
+            legendItems.push(
+                <div key={`legend-item-${i}`} style={{ display: 'flex', alignItems: 'center', marginRight: '15px' }}>
+                    <div style={{ width: '20px', height: '20px', backgroundColor: color, marginRight: '5px' }}></div>
+                    <div>{startValue.toFixed(2)} - {(startValue + stepValue).toFixed(2)}</div>
+                </div>
+            );
+        }
+
+        return (
+            <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
+                <div style={{ marginRight: '10px' }}>Legend:</div>
+                {legendItems}
+            </div>
+        );
+    };
+
     return (
-        <table border="1">
-            <thead>
-                {renderColumnHeaders()}
-                {renderRowHeaders()}
-            </thead>
-            <tbody>
-                {rowHeaders.map((rowKey, rowIndex) => (
-                    <tr key={`row-${String(rowIndex)}`}>
-                        {renderRowCells(rowKey, rowIndex)}
-                        {columnGroups.map((group, colIndex) => (
-                            <td key={`data-${rowIndex}-${colIndex}`}>{dataMatrix[rowKey][group.key] || 0}</td>
-                        ))}
-                    </tr>
-                ))}
-            </tbody>
-        </table>
+        <>
+            <table border="1">
+                <thead>
+                    {renderColumnHeaders()}
+                    {renderRowHeaders()}
+                </thead>
+                <tbody>
+                    {rowHeaders.map((rowKey, rowIndex) => (
+                        <tr key={`row-${String(rowIndex)}`}>
+                            {renderRowCells(rowKey, rowIndex)}
+                            {columnGroups.map((group, colIndex) => renderDataCells(rowKey, colIndex, group))}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            {heatmapOptions.showLegend && renderLegend()}
+        </>
     );
 };
 

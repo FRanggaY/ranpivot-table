@@ -6,13 +6,26 @@ class RanPivotTable {
      * @param {Array<string>} columnFields - The fields to be used for columns.
      * @param {string} valueField - The field to be aggregated.
      * @param {string} [aggregationFunction='sum'] - The aggregation function to be used ('sum', 'count', 'countUnique', 'average', 'median').
+     * @param {Object} [heatmapOptions] - Optional heatmap settings.
+     * @param {boolean} [heatmapOptions.enableHeatmap=false] - Enable overall heatmap.
+     * @param {boolean} [heatmapOptions.enableRowHeatmap=false] - Enable row-based heatmap.
+     * @param {boolean} [heatmapOptions.enableColHeatmap=false] - Enable column-based heatmap.
+     * @param {boolean} [heatmapOptions.showLegend=false] - Show the color legend for the heatmap.
      */
-    constructor(data, rowFields, columnFields, valueField, aggregationFunction = 'sum') {
+    constructor(data, rowFields, columnFields, valueField, aggregationFunction = 'sum', heatmapOptions = {}) {
         this.data = data;
         this.rowFields = rowFields;
         this.columnFields = columnFields;
         this.valueField = valueField;
         this.aggregationFunction = aggregationFunction;
+
+        // Heatmap settings
+        this.heatmapOptions = {
+            enableHeatmap: heatmapOptions.enableHeatmap || false,
+            enableRowHeatmap: heatmapOptions.enableRowHeatmap || false,
+            enableColHeatmap: heatmapOptions.enableColHeatmap || false,
+            showLegend: heatmapOptions.showLegend || false
+        };
     }
 
     /**
@@ -21,7 +34,15 @@ class RanPivotTable {
      */
     render() {
         const { columnGroups, rowHeaders, dataMatrix } = this.processData();
-        return this.buildHtml(columnGroups, rowHeaders, dataMatrix);
+        let html = this.buildHtml(columnGroups, rowHeaders, dataMatrix);
+        
+        // If showLegend is enabled, append the legend to the HTML
+        if (this.heatmapOptions.showLegend) {
+            const { min, max } = this.getMinMaxValues(dataMatrix);
+            html += this.buildLegend(min, max);
+        }
+
+        return html;
     }
 
     processData() {
@@ -116,6 +137,9 @@ class RanPivotTable {
             html += `<th>${field}</th>`;
         });
 
+        // Calculate min and max values for heatmap
+        const { min, max } = this.getMinMaxValues(dataMatrix);
+
         // Fill in the data rows
         rowHeaders.forEach((rowKey, rowIndex) => {
             html += '<tr>';
@@ -130,13 +154,89 @@ class RanPivotTable {
             });
             columnGroups.forEach(group => {
                 const value = dataMatrix[rowKey][group.key] || 0;
-                html += `<td>${value}</td>`;
+                const color = this.getHeatmapColor(value, min, max, rowKey, group.key, dataMatrix);
+                html += `<td style="background-color: ${color};">${value}</td>`;
             });
             html += '</tr>';
         });
 
         html += '</tbody></table>';
         return html;
+    }
+
+    getMinMaxValues(dataMatrix) {
+        let min = Infinity, max = -Infinity;
+
+        for (let rowKey in dataMatrix) {
+            for (let columnKey in dataMatrix[rowKey]) {
+                const value = dataMatrix[rowKey][columnKey];
+                if (value < min) min = value;
+                if (value > max) max = value;
+            }
+        }
+
+        return { min, max };
+    }
+
+    getHeatmapColor(value, min, max, rowKey, columnKey, dataMatrix) {
+        const intensity = (value - min) / (max - min);
+        const heatmapBaseColor = [255, 0, 0]; // Red color
+        const whiteColor = [255, 255, 255];
+
+        const interpolateColor = (startColor, endColor, factor) => {
+            return startColor.map((color, i) => Math.min(255, Math.max(0, Math.round(color + factor * (endColor[i] - color)))));
+        };
+
+        const calculateColor = (factor) => {
+            return interpolateColor(whiteColor, heatmapBaseColor, factor);
+        };
+
+        let color;
+
+        if (this.heatmapOptions.enableHeatmap) {
+            color = `rgb(${calculateColor(intensity).join(',')})`;
+        } else if (this.heatmapOptions.enableRowHeatmap) {
+            const rowMax = Math.max(...Object.values(dataMatrix[rowKey]));
+            const rowIntensity = value / rowMax;
+            color = `rgb(${calculateColor(rowIntensity).join(',')})`;
+        } else if (this.heatmapOptions.enableColHeatmap) {
+            const colValues = Object.values(dataMatrix).map(row => row[columnKey] || 0);
+            const colMax = Math.max(...colValues);
+            const colIntensity = value / colMax;
+            color = `rgb(${calculateColor(colIntensity).join(',')})`;
+        } else {
+            color = `rgb(${calculateColor(intensity).join(',')})`;
+        }
+
+        return color;
+    }
+
+    buildLegend(min, max) {
+        const gradientColors = [];
+        const steps = 10; // Number of gradient steps
+        const stepValue = (max - min) / steps;
+
+        for (let i = 0; i < steps; i++) {
+            const startValue = min + stepValue * i;
+            const endValue = min + stepValue * (i + 1);
+            const color = this.getHeatmapColor(startValue, min, max, null, null, null);
+            gradientColors.push({ color, range: `${startValue.toFixed(2)} - ${endValue.toFixed(2)}` });
+        }
+
+        let legendHtml = '<div style="display: flex; align-items: center; margin-top: 10px;">';
+        legendHtml += '<div style="margin-right: 10px;">Legend:</div>';
+        
+        gradientColors.forEach((entry) => {
+            legendHtml += `
+                <div style="display: flex; align-items: center; margin-right: 15px;">
+                    <div style="width: 20px; height: 20px; background-color: ${entry.color}; margin-right: 5px;"></div>
+                    <div>${entry.range}</div>
+                </div>`;
+        });
+
+        legendHtml += '</div>';
+        
+        return legendHtml;
     }
 }
 
