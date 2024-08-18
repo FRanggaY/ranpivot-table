@@ -22,8 +22,7 @@
 <body>
   <div id="pivot-table-container"></div>
 
-  <script src="../../dist/pivotTable.js"></script>
-  <!-- <script src="https://cdn.jsdelivr.net/npm/ranpivot-table@1.0.6/dist/pivotTable.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/ranpivot-table@1.0.7/dist/pivotTable.js"></script>
   <script>
     const data = [
       {"Product": "Apple",  "World": "Earth-5", "Category": "Fruits", "Region": "North", "Month": "January", "Sales": 120},
@@ -35,7 +34,8 @@
       {"Product": "Carrot",  "World": "Earth-5", "Category": "Vegetables", "Region": "South", "Month": "February", "Sales": 75},
       {"Product": "Apple",  "World": "Earth-5", "Category": "Fruits", "Region": "North", "Month": "March", "Sales": 140},
       {"Product": "Banana",  "World": "Earth-2", "Category": "Fruits", "Region": "North", "Month": "March", "Sales": 100},
-      {"Product": "Carrot",  "World": "Earth-5", "Category": "Vegetables", "Region": "North", "Month": "March", "Sales": 80}
+      {"Product": "Carrot",  "World": "Earth-5", "Category": "Vegetables", "Region": "North", "Month": "March", "Sales": 80},
+      {"Product": "Carrot",  "World": "Earth-2", "Category": "Vegetables", "Region": "North", "Month": "March", "Sales": 150}
     ];
 
     const table = document.getElementById("pivot-table-container");
@@ -47,7 +47,8 @@
     const heatMapOptions = {
       enableHeatmap: true,
       enableRowHeatmap: true,
-      enableColHeatmap: false
+      enableColHeatmap: false,
+      showLegend: true
     }
 
     const pivotTable = new RanPivotTable(data, rowFields, columnFields, valueField, aggregation, heatMapOptions);
