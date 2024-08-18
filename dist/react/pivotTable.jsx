@@ -171,21 +171,49 @@ const RanPivotTable = ({
         return <td key={`data-${rowKey}-${colIndex}`} style={{ backgroundColor }}>{value}</td>;
     };
 
+    const renderLegend = () => {
+        const { min, max } = getMinMaxValues();
+        const steps = 10;
+        const stepValue = (max - min) / steps;
+        const legendItems = [];
+
+        for (let i = 0; i <= steps; i++) {
+            const startValue = min + stepValue * i;
+            const color = getHeatmapColor(startValue, min, max);
+            legendItems.push(
+                <div key={`legend-item-${i}`} style={{ display: 'flex', alignItems: 'center', marginRight: '15px' }}>
+                    <div style={{ width: '20px', height: '20px', backgroundColor: color, marginRight: '5px' }}></div>
+                    <div>{startValue.toFixed(2)} - {(startValue + stepValue).toFixed(2)}</div>
+                </div>
+            );
+        }
+
+        return (
+            <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
+                <div style={{ marginRight: '10px' }}>Legend:</div>
+                {legendItems}
+            </div>
+        );
+    };
+
     return (
-        <table border="1">
-            <thead>
-                {renderColumnHeaders()}
-                {renderRowHeaders()}
-            </thead>
-            <tbody>
-                {rowHeaders.map((rowKey, rowIndex) => (
-                    <tr key={`row-${String(rowIndex)}`}>
-                        {renderRowCells(rowKey, rowIndex)}
-                        {columnGroups.map((group, colIndex) => renderDataCells(rowKey, colIndex, group))}
-                    </tr>
-                ))}
-            </tbody>
-        </table>
+        <>
+            <table border="1">
+                <thead>
+                    {renderColumnHeaders()}
+                    {renderRowHeaders()}
+                </thead>
+                <tbody>
+                    {rowHeaders.map((rowKey, rowIndex) => (
+                        <tr key={`row-${String(rowIndex)}`}>
+                            {renderRowCells(rowKey, rowIndex)}
+                            {columnGroups.map((group, colIndex) => renderDataCells(rowKey, colIndex, group))}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            {heatmapOptions.showLegend && renderLegend()}
+        </>
     );
 };
 
